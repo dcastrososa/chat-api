@@ -1,0 +1,39 @@
+#default: &default
+#  adapter: postgresql
+#  encoding: utf8
+#  database: <%= ENV['DATABASE_NAME'] %>
+#  username: <%= ENV['DATABASE_USERNAME'] %>
+#  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+#  password: <%= ENV['DATABASE_PASSWORD'] %>
+
+#development:
+#  <<: *default
+
+#  host: localhost
+#  port: 5432
+
+#production:
+#  <<: *default
+
+#  test:
+#    <<: *default
+
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  database: chat-api_development
+  username: postgres
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  password: 123456
+
+development:
+  <<: *default
+
+  host: localhost
+  port: 5432
+
+production:
+  <<: *default
+
+  test:
+    <<: *default
