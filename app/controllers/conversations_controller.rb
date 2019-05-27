@@ -1,6 +1,6 @@
 class ConversationsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_user_id_loggued, only: [:index]
+    before_action :set_user_id_loggued, only: [:index, :create]
 
     def index
         render json: Conversation.where("user_send_id = ? OR user_receive_id = ?", @user_id, @user_id)
@@ -11,7 +11,8 @@ class ConversationsController < ApplicationController
         if conversation.valid?
             conversation.save
             serialized_data = ActiveModelSerializers::Adapter::Json.new(ConversationSerializer.new(conversation)).serializable_hash
-            ActionCable.server.broadcast 'conversations_channel', serialized_data
+            ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_send_id]}", serialized_data
+            ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_receive_id]}", serialized_data
             render json: {data: serialized_data}
         else 
             render json: {messages: conversation.errors.full_messages }, status: 422
