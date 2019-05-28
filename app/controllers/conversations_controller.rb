@@ -3,19 +3,20 @@ class ConversationsController < ApplicationController
     before_action :set_user_id_loggued, only: [:index, :create]
 
     def index
-        render json: Conversation.where("user_send_id = ? OR user_receive_id = ?", @user_id, @user_id)
+        render json: Conversation.get_conversations_user_loggued(@user_id)
     end
 
     def create
         conversation = Conversation.new(conversation_params)
         if conversation.valid?
             conversation.save
-            serialized_data = ActiveModelSerializers::Adapter::Json.new(ConversationSerializer.new(conversation)).serializable_hash
-            ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_send_id]}", serialized_data
-            ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_receive_id]}", serialized_data
-            render json: {data: serialized_data}
+            ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_send_id]}",
+                conversation: Conversation.parse_conversation_with_user_third(conversation, @user_id)
+            ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_receive_id]}",
+                conversation: Conversation.parse_conversation_with_user_third(conversation, @user_id)
+            render json: { data: conversation }
         else 
-            render json: {messages: conversation.errors.full_messages }, status: 422
+            render json: { messages: conversation.errors.full_messages }, status: 422
         end
     end
     

@@ -1,9 +1,13 @@
 class UsersController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_user_id_loggued, only: [:index]
+    before_action :set_user_id_loggued, only: [:index, :show]
 
     def index
         render json: User.where("id != ?", @user_id)
+    end
+
+    def show
+        render json: User.find(params[:id])
     end
 
     private

@@ -7,7 +7,6 @@ class MessagesController < ApplicationController
 
         if message.valid?
             conversation = Conversation.find(message_params[:conversation_id])
-            #message.user_send_id = @user_id
             message.save
             serialized_data = ActiveModelSerializers::Adapter::Json.new(MessageSerializer.new(message)).serializable_hash
             MessagesChannel.broadcast_to conversation, serialized_data
