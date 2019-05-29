@@ -21,7 +21,7 @@ class Conversation < ApplicationRecord
     def self.parse_conversation_with_user_third data, user_id
         conversation = Hash.new
         conversation["id"] = data["id"]
-        conversation["messages"] = data.messages
+        conversation["messages"] = data.messages.map{|message| MessageSerializer.new(message)}
         conversation["user_third"] = user_id != data["user_send_id"] ? User.find(data["user_send_id"]) : User.find(data["user_receive_id"])
         return conversation
     end
