@@ -1,6 +1,6 @@
 class ConversationsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_user_id_loggued, only: [:index, :create]
+    before_action :set_user_id_loggued, only: [:index, :create, :users_for_new_conversations]
 
     def index
         render json: Conversation.get_conversations_user_loggued(@user_id)
@@ -18,6 +18,12 @@ class ConversationsController < ApplicationController
         else 
             render json: { messages: conversation.errors.full_messages }, status: 422
         end
+    end
+
+    def users_for_new_conversations
+        render json: {
+            data: Conversation.users_for_new_conversations(@user_id)
+        }, status: 200
     end
     
     private
