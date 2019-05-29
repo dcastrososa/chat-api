@@ -11,9 +11,9 @@ class ConversationsController < ApplicationController
         if conversation.valid?
             conversation.save
             ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_send_id]}",
-                conversation: Conversation.parse_conversation_with_user_third(conversation, @user_id)
+                conversation: Conversation.parse_conversation_with_user_third(conversation, conversation_params[:user_send_id])
             ActionCable.server.broadcast "conversations_channel_#{conversation_params[:user_receive_id]}",
-                conversation: Conversation.parse_conversation_with_user_third(conversation, @user_id)
+                conversation: Conversation.parse_conversation_with_user_third(conversation, conversation_params[:user_receive_id])
             render json: { data: conversation }
         else 
             render json: { messages: conversation.errors.full_messages }, status: 422
